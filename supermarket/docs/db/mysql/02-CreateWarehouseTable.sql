@@ -7,13 +7,13 @@ DROP TABLE IF EXISTS `warehouses`;
 CREATE TABLE `warehouses` (
   `id` int NOT NULL,
   `name` varchar(255) NOT NULL,
-  `adress` varchar(150) NOT NULL,
+  `address` varchar(150) NOT NULL,
   `telephone` varchar(150) NOT NULL,
   `capacity` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Volcado de datos para la tabla `warehouses`
-INSERT INTO `warehouses` (`id`, `name`, `adress`, `telephone`, `capacity`) VALUES
+INSERT INTO `warehouses` (`id`, `name`, `address`, `telephone`, `capacity`) VALUES
 (1, 'Main Warehouse', '221 Baker Street', "4555666", 100);
 
 -- Asignar la columna `id` 

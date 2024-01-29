@@ -34,6 +34,22 @@ func (r *RepositoryProductStore) FindById(id int) (p internal.Product, err error
 	return
 }
 
+// GetAll gets all products.
+func (r *RepositoryProductStore) GetAll() (p []internal.Product, err error) {
+	// read all products
+	ps, err := r.st.ReadAll()
+	if err != nil {
+		return
+	}
+
+	// convert map to slice
+	for _, v := range ps {
+		p = append(p, v)
+	}
+
+	return
+}
+
 // Save saves a product.
 func (r *RepositoryProductStore) Save(p *internal.Product) (err error) {
 	// read all products

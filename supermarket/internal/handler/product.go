@@ -92,6 +92,42 @@ func (h *HandlerProduct) GetById() http.HandlerFunc {
 	}
 }
 
+// GetAll gets all products.
+func (h *HandlerProduct) GetAll() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// request
+		// ...
+
+		// process
+		// - find all products
+		products, err := h.rp.GetAll()
+		if err != nil {
+			response.JSON(w, http.StatusInternalServerError, "internal server error")
+			return
+		}
+
+		// response
+		// - serialize products to JSON
+		var data []ProductJSON
+		for _, p := range products {
+			data = append(data, ProductJSON{
+				Id:          p.Id,
+				Name:        p.Name,
+				Quantity:    p.Quantity,
+				CodeValue:   p.CodeValue,
+				IsPublished: p.IsPublished,
+				Expiration:  p.Expiration.Format(time.DateOnly),
+				Price:       p.Price,
+				WarehouseId: p.WarehouseId,
+			})
+		}
+		response.JSON(w, http.StatusOK, map[string]any{
+			"data":    data,
+			"message": "succesfully retrieved all products",
+		})
+	}
+}
+
 // Create creates a product.
 func (h *HandlerProduct) Create() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {

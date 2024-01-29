@@ -65,18 +65,59 @@ func (a *ApplicationMySQL) SetUp() (err error) {
 	}
 	a.db = db
 
-	// - repository
-	rp := repository.NewRepositoryProductMySQL(db)
+	// - middlewares
+	a.rt.Use(middleware.Logger)
+	a.rt.Use(middleware.Recoverer)
 
+	// - warehouse
+	err = a.setUpWarehouse()
+	if err != nil {
+		return
+	}
+	// - product
+	err = a.setUpProduct()
+	if err != nil {
+		return
+	}
+
+	return
+}
+
+// Run runs the application.
+func (a *ApplicationMySQL) Run() (err error) {
+	err = http.ListenAndServe(a.addr, a.rt)
+	return
+}
+
+func (a *ApplicationMySQL) setUpWarehouse() (err error) {
+	// dependencies
+	// - repository
+	rw := repository.NewRepositoryWarehouseMySQL(a.db)
+	// - handler
+	wh := handler.NewWarehouseHandler(rw)
+	// routes
+	a.rt.Route("/warehouses", func(r chi.Router) {
+		// GET /warehouses
+		r.Get("/", wh.GetAll())
+		// GET /warehouses/{id}
+		r.Get("/{id}", wh.GetByID())
+		// POST /warehouses
+		r.Post("/", wh.Create())
+	})
+	return
+}
+
+func (a *ApplicationMySQL) setUpProduct() (err error) {
+	// - repository
+	rp := repository.NewRepositoryProductMySQL(a.db)
 	// - handler
 	hd := handler.NewHandlerProduct(rp)
 
 	// router
-	// - middlewares
-	a.rt.Use(middleware.Logger)
-	a.rt.Use(middleware.Recoverer)
 	// - endpoints
 	a.rt.Route("/products", func(r chi.Router) {
+		// GET /products
+		r.Get("/", hd.GetAll())
 		// GET /products/{id}
 		r.Get("/{id}", hd.GetById())
 		// POST /products
@@ -88,12 +129,5 @@ func (a *ApplicationMySQL) SetUp() (err error) {
 		// DELETE /products/{id}
 		r.Delete("/{id}", hd.Delete())
 	})
-
-	return
-}
-
-// Run runs the application.
-func (a *ApplicationMySQL) Run() (err error) {
-	err = http.ListenAndServe(a.addr, a.rt)
 	return
 }

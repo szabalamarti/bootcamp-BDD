@@ -41,6 +41,27 @@ func (rp *RepositoryProductMySQL) FindById(id int) (p internal.Product, err erro
 	return
 }
 
+// GetAll returns all products.
+func (rp *RepositoryProductMySQL) GetAll() (p []internal.Product, err error) {
+	// Query the database for the products.
+	rows, err := rp.db.Query("SELECT id, name, price, quantity, code_value, is_published, expiration, price, id_warehouse FROM products")
+	if err != nil {
+		return
+	}
+	defer rows.Close()
+
+	// Scan the rows into the products.
+	for rows.Next() {
+		var product internal.Product
+		err = rows.Scan(&product.Id, &product.Name, &product.Price, &product.Quantity, &product.CodeValue, &product.IsPublished, &product.Expiration, &product.Price, &product.WarehouseId)
+		if err != nil {
+			return
+		}
+		p = append(p, product)
+	}
+	return
+}
+
 func (rp *RepositoryProductMySQL) Save(p *internal.Product) (err error) {
 	result, err := rp.db.Exec(
 		"INSERT INTO products (name, quantity, code_value, is_published, expiration, price, id_warehouse) VALUES (?, ?, ?, ?, ?, ?, ?)",
@@ -69,7 +90,6 @@ func (rp *RepositoryProductMySQL) Save(p *internal.Product) (err error) {
 
 	// Set the id of the product.
 	p.Id = int(id)
-
 	return
 }
 

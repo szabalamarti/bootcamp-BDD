@@ -1,6 +1,9 @@
 package internal
 
-import "time"
+import (
+	"errors"
+	"time"
+)
 
 // ProductAttributes is a struct that contains the attributes of a product
 type ProductAttributes struct {
@@ -26,4 +29,35 @@ type Product struct {
 	Id int
 	// ProductAttributes is the attributes of the product
 	ProductAttributes
+}
+
+var (
+	// ErrRepositoryProductNotFound is returned when a product is not found.
+	ErrRepositoryProductNotFound = errors.New("repository: product not found")
+	// ErrBuyerRepositoryDuplicated is returned when a product is duplicated.
+	ErrBuyerRepositoryDuplicated = errors.New("repository: product duplicated")
+)
+
+// RepositoryProduct is an interface that contains the methods for a product repository
+type RepositoryProduct interface {
+	// FindById returns a product by its id
+	FindById(id int) (p Product, err error)
+	// GetAll returns all products
+	GetAll() (p []Product, err error)
+	// Save saves a product
+	Save(p *Product) (err error)
+	// UpdateOrSave updates or saves a product
+	UpdateOrSave(p *Product) (err error)
+	// Update updates a product
+	Update(p *Product) (err error)
+	// Delete deletes a product
+	Delete(id int) (err error)
+}
+
+// StoreProduct is an interface for a product store.
+type StoreProduct interface {
+	// ReadAll reads all products from the store.
+	ReadAll() (p map[int]Product, err error)
+	// WriteAll writes all products to the store.
+	WriteAll(p map[int]Product) (err error)
 }
