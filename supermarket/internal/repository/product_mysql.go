@@ -25,13 +25,13 @@ type RepositoryProductMySQL struct {
 // FindById returns a product by its id.
 func (rp *RepositoryProductMySQL) FindById(id int) (p internal.Product, err error) {
 	// Query the database for the product.
-	row := rp.db.QueryRow("SELECT id, name, price, quantity, code_value, is_published, expiration, price FROM products WHERE id = ?", id)
+	row := rp.db.QueryRow("SELECT id, name, price, quantity, code_value, is_published, expiration, price, id_warehouse FROM products WHERE id = ?", id)
 	if err := row.Err(); err != nil {
 		return p, err
 	}
 
 	// Scan the row into the product.
-	err = row.Scan(&p.Id, &p.Name, &p.Price, &p.Quantity, &p.CodeValue, &p.IsPublished, &p.Expiration, &p.Price)
+	err = row.Scan(&p.Id, &p.Name, &p.Price, &p.Quantity, &p.CodeValue, &p.IsPublished, &p.Expiration, &p.Price, &p.WarehouseId)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			err = internal.ErrRepositoryProductNotFound
@@ -43,8 +43,8 @@ func (rp *RepositoryProductMySQL) FindById(id int) (p internal.Product, err erro
 
 func (rp *RepositoryProductMySQL) Save(p *internal.Product) (err error) {
 	result, err := rp.db.Exec(
-		"INSERT INTO products (name, quantity, code_value, is_published, expiration, price) VALUES (?, ?, ?, ?, ?, ?)",
-		p.Name, p.Quantity, p.CodeValue, p.IsPublished, p.Expiration, p.Price,
+		"INSERT INTO products (name, quantity, code_value, is_published, expiration, price, id_warehouse) VALUES (?, ?, ?, ?, ?, ?, ?)",
+		p.Name, p.Quantity, p.CodeValue, p.IsPublished, p.Expiration, p.Price, p.WarehouseId,
 	)
 	if err != nil {
 		var mysqlErr *mysql.MySQLError
@@ -83,8 +83,8 @@ func (rp *RepositoryProductMySQL) UpdateOrSave(p *internal.Product) (err error) 
 
 func (rp *RepositoryProductMySQL) Update(p *internal.Product) (err error) {
 	_, err = rp.db.Exec(
-		"UPDATE products SET name = ?, quantity = ?, code_value = ?, is_published = ?, expiration = ?, price = ? WHERE id = ?",
-		p.Name, p.Quantity, p.CodeValue, p.IsPublished, p.Expiration, p.Price, p.Id,
+		"UPDATE products SET name = ?, quantity = ?, code_value = ?, is_published = ?, expiration = ?, price = ?, id_warehouse = ? WHERE id = ?",
+		p.Name, p.Quantity, p.CodeValue, p.IsPublished, p.Expiration, p.Price, p.WarehouseId, p.Id,
 	)
 	if err != nil {
 		var mysqlErr *mysql.MySQLError

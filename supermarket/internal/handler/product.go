@@ -35,6 +35,18 @@ type ProductJSON struct {
 	IsPublished bool    `json:"is_published"`
 	Expiration  string  `json:"expiration"`
 	Price       float64 `json:"price"`
+	WarehouseId int     `json:"id_warehouse"` // new field
+}
+
+// RequestBodyProductCreate is a request body for creating a product.
+type RequestBodyProductCreate struct {
+	Name        string  `json:"name"`
+	Quantity    int     `json:"quantity"`
+	CodeValue   string  `json:"code_value"`
+	IsPublished bool    `json:"is_published"`
+	Expiration  string  `json:"expiration"`
+	Price       float64 `json:"price"`
+	WarehouseId int     `json:"id_warehouse"` // new field
 }
 
 // GetById gets a product by id.
@@ -71,22 +83,13 @@ func (h *HandlerProduct) GetById() http.HandlerFunc {
 			IsPublished: p.IsPublished,
 			Expiration:  p.Expiration.Format(time.DateOnly),
 			Price:       p.Price,
+			WarehouseId: p.WarehouseId,
 		}
 		response.JSON(w, http.StatusOK, map[string]any{
 			"message": "success",
 			"data":    data,
 		})
 	}
-}
-
-// RequestBodyProductCreate is a request body for creating a product.
-type RequestBodyProductCreate struct {
-	Name        string  `json:"name"`
-	Quantity    int     `json:"quantity"`
-	CodeValue   string  `json:"code_value"`
-	IsPublished bool    `json:"is_published"`
-	Expiration  string  `json:"expiration"`
-	Price       float64 `json:"price"`
 }
 
 // Create creates a product.
@@ -98,6 +101,11 @@ func (h *HandlerProduct) Create() http.HandlerFunc {
 		err := request.JSON(r, &body)
 		if err != nil {
 			response.JSON(w, http.StatusBadRequest, "invalid body")
+			return
+		}
+		// - check if WarehouseId is provided
+		if body.WarehouseId == 0 {
+			response.JSON(w, http.StatusBadRequest, "WarehouseId is required")
 			return
 		}
 		// - expiration
@@ -117,6 +125,7 @@ func (h *HandlerProduct) Create() http.HandlerFunc {
 				IsPublished: body.IsPublished,
 				Expiration:  exp,
 				Price:       body.Price,
+				WarehouseId: body.WarehouseId,
 			},
 		}
 		err = h.rp.Save(&p)
@@ -135,6 +144,7 @@ func (h *HandlerProduct) Create() http.HandlerFunc {
 			IsPublished: p.IsPublished,
 			Expiration:  p.Expiration.Format(time.DateOnly),
 			Price:       p.Price,
+			WarehouseId: p.WarehouseId,
 		}
 		response.JSON(w, http.StatusCreated, map[string]any{
 			"message": "success",
@@ -178,6 +188,7 @@ func (h *HandlerProduct) UpdateOrCreate() http.HandlerFunc {
 				IsPublished: body.IsPublished,
 				Expiration:  exp,
 				Price:       body.Price,
+				WarehouseId: body.WarehouseId,
 			},
 		}
 		err = h.rp.UpdateOrSave(&p)
@@ -196,6 +207,7 @@ func (h *HandlerProduct) UpdateOrCreate() http.HandlerFunc {
 			IsPublished: p.IsPublished,
 			Expiration:  p.Expiration.Format(time.DateOnly),
 			Price:       p.Price,
+			WarehouseId: p.WarehouseId,
 		}
 		response.JSON(w, http.StatusOK, map[string]any{
 			"message": "success",
@@ -235,6 +247,7 @@ func (h *HandlerProduct) Update() http.HandlerFunc {
 			IsPublished: p.IsPublished,
 			Expiration:  p.Expiration.Format(time.DateOnly),
 			Price:       p.Price,
+			WarehouseId: p.WarehouseId,
 		}
 		err = request.JSON(r, &body)
 		if err != nil {
@@ -254,6 +267,7 @@ func (h *HandlerProduct) Update() http.HandlerFunc {
 		p.IsPublished = body.IsPublished
 		p.Expiration = exp
 		p.Price = body.Price
+		p.WarehouseId = body.WarehouseId
 		err = h.rp.Update(&p)
 		if err != nil {
 			response.JSON(w, http.StatusInternalServerError, "internal server error")
@@ -270,6 +284,7 @@ func (h *HandlerProduct) Update() http.HandlerFunc {
 			IsPublished: p.IsPublished,
 			Expiration:  p.Expiration.Format(time.DateOnly),
 			Price:       p.Price,
+			WarehouseId: p.WarehouseId,
 		}
 		response.JSON(w, http.StatusOK, map[string]any{
 			"message": "success",

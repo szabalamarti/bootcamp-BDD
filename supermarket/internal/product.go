@@ -16,6 +16,8 @@ type ProductAttributes struct {
 	Expiration time.Time
 	// Price
 	Price float64
+	// WarehouseId is the id of the warehouse where the product is stored
+	WarehouseId int
 }
 
 // Product is a struct that contains the attributes of a product

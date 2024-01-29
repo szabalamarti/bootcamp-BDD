@@ -1,4 +1,3 @@
-
 -- Delete user if already exists
 DROP USER IF EXISTS 'user1'@'localhost';
 
