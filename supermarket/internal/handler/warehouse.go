@@ -4,6 +4,7 @@ import (
 	"app/internal"
 	"app/platform/web/request"
 	"app/platform/web/response"
+	"encoding/json"
 	"net/http"
 	"strconv"
 
@@ -39,6 +40,12 @@ type RequestBodyWarehouseCreate struct {
 	Address   string `json:"address"`
 	Telephone string `json:"telephone"`
 	Capacity  int    `json:"capacity"`
+}
+
+// ReportProductJSON is a report product in JSON format.
+type ReportProductJSON struct {
+	WarehouseName string `json:"warehouse_name"`
+	ProductCount  int    `json:"product_count"`
 }
 
 // GetByID returns a warehouse by its id.
@@ -150,6 +157,47 @@ func (h *WarehouseHandler) Create() http.HandlerFunc {
 		response.JSON(w, http.StatusCreated, map[string]interface{}{
 			"data":    data,
 			"message": "warehouse created successfully",
+		})
+	}
+}
+
+// GerProductReports returns a reports of products by warehouse.
+func (h *WarehouseHandler) GetProductReports() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// request
+		// - query param id is a list of warehouse ids
+		queryIds, ok := r.URL.Query()["id"]
+
+		var intIds []int
+		if ok {
+			// Parse the first query parameter as a JSON array
+			err := json.Unmarshal([]byte(queryIds[0]), &intIds)
+			if err != nil {
+				response.JSON(w, http.StatusBadRequest, "invalid id")
+				return
+			}
+		}
+
+		// process
+		reports, err := h.rw.ReportProducts(intIds)
+		if err != nil {
+			response.JSON(w, http.StatusInternalServerError, "internal server error")
+			return
+		}
+
+		// response
+		// - serialize reports
+		var data []ReportProductJSON
+		for _, report := range reports {
+			data = append(data, ReportProductJSON{
+				WarehouseName: report.WarehouseName,
+				ProductCount:  report.ProductCount,
+			})
+		}
+
+		response.JSON(w, http.StatusOK, map[string]interface{}{
+			"data":    data,
+			"message": "reports found successfully",
 		})
 	}
 }

@@ -3,6 +3,8 @@ package repository
 import (
 	"app/internal"
 	"database/sql"
+	"fmt"
+	"strings"
 )
 
 // RepositoryWarehouseMySQL is the repository warehouse MySQL.
@@ -77,5 +79,38 @@ func (rw *RepositoryWarehouseMySQL) Save(w *internal.Warehouse) (err error) {
 
 	// Set the id of the warehouse.
 	w.Id = int(id)
+	return
+}
+
+// ReportProducts returns the amount of products by warehouse.
+func (rw *RepositoryWarehouseMySQL) ReportProducts(warehouseIds []int) (r []internal.WarehouseReportProducts, err error) {
+	var query string
+	args := make([]interface{}, len(warehouseIds))
+	for i, id := range warehouseIds {
+		args[i] = id
+	}
+
+	if len(warehouseIds) == 0 {
+		query = "SELECT warehouses.name, COUNT(products.id) AS product_count FROM warehouses LEFT JOIN products ON warehouses.id = products.id_warehouse GROUP BY warehouses.id"
+	} else {
+		placeholders := strings.Trim(strings.Repeat(",?", len(warehouseIds)), ",")
+		query = fmt.Sprintf("SELECT warehouses.name, COUNT(products.id) AS product_count FROM warehouses LEFT JOIN products ON warehouses.id = products.id_warehouse WHERE warehouses.id IN (%s) GROUP BY warehouses.id", placeholders)
+	}
+
+	rows, err := rw.db.Query(query, args...)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	for rows.Next() {
+		var warehouseReport internal.WarehouseReportProducts
+		err = rows.Scan(&warehouseReport.WarehouseName, &warehouseReport.ProductCount)
+		if err != nil {
+			return
+		}
+		r = append(r, warehouseReport)
+	}
+
 	return
 }

@@ -103,6 +103,8 @@ func (a *ApplicationMySQL) setUpWarehouse() (err error) {
 		r.Get("/{id}", wh.GetByID())
 		// POST /warehouses
 		r.Post("/", wh.Create())
+		// GET /reportProducts
+		r.Get("/reportProducts", wh.GetProductReports())
 	})
 	return
 }

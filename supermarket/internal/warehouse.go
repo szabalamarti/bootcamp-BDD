@@ -16,6 +16,14 @@ type Warehouse struct {
 	Capacity int
 }
 
+// WarehouseReportProducts is a struct that contains the amount of products in a warehouse
+type WarehouseReportProducts struct {
+	// WarehouseName is the name of the warehouse
+	WarehouseName string
+	// ProductCount is the amount of products in the warehouse
+	ProductCount int
+}
+
 var (
 	// ErrRepositoryWarehouseNotFound is returned when a warehouse is not found.
 	ErrRepositoryWarehouseNotFound = errors.New("repository: warehouse not found")
@@ -29,4 +37,6 @@ type RepositoryWarehouse interface {
 	GetAll() (w []Warehouse, err error)
 	// Save creates a warehouse
 	Save(w *Warehouse) (err error)
+	// ReportProducts returns a report of the amount of products in each warehouse
+	ReportProducts(warehouseIds []int) (r []WarehouseReportProducts, err error)
 }
