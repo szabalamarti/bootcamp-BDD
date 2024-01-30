@@ -67,3 +67,24 @@ func (r *InvoicesMySQL) Save(i *internal.Invoice) (err error) {
 
 	return
 }
+
+// UpdateTotal updates the total of all invoices in the database.
+func (r *InvoicesMySQL) UpdateTotal() (totalUpdated int, err error) {
+	// execute the query
+	result, err := r.db.Exec(
+		"UPDATE invoices i SET total = (SELECT SUM(s.quantity * p.price) FROM sales s JOIN products p ON s.product_id = p.id WHERE s.invoice_id = i.id)",
+	)
+
+	if err != nil {
+		return 0, err
+	}
+
+	// get the number of rows affected
+	totalUpdatedInt64, err := result.RowsAffected()
+	if err != nil {
+		return 0, err
+	}
+
+	totalUpdated = int(totalUpdatedInt64)
+	return
+}
