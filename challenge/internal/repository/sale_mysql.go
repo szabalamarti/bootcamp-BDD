@@ -67,3 +67,37 @@ func (r *SalesMySQL) Save(s *internal.Sale) (err error) {
 
 	return
 }
+
+// FindTopSold returns the top n products sold in the database.
+// a sale has one product and a quantity
+// a product has a name
+func (r *SalesMySQL) FindTopSold(n int) (p []internal.ProductSales, err error) {
+	// execute the query
+	rows, err := r.db.Query(
+		"SELECT `products`.`description`, SUM(`sales`.`quantity`) AS `total` FROM `sales` INNER JOIN `products` ON `sales`.`product_id` = `products`.`id` GROUP BY `sales`.`product_id` ORDER BY `total` DESC LIMIT ?",
+		n,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	// iterate over the rows
+	for rows.Next() {
+		var pr internal.ProductSales
+		// scan the row into the product
+		err := rows.Scan(&pr.ProductDescription, &pr.Sales)
+		if err != nil {
+			return nil, err
+		}
+		// append the product to the slice
+		p = append(p, pr)
+	}
+	err = rows.Err()
+	if err != nil {
+		return
+	}
+
+	return
+}

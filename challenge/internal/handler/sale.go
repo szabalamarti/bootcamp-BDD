@@ -21,10 +21,16 @@ type SalesDefault struct {
 
 // SaleJSON is a struct that represents a sale in JSON format
 type SaleJSON struct {
-	Id int `json:"id"`
-	Quantity int `json:"quantity"`
+	Id        int `json:"id"`
+	Quantity  int `json:"quantity"`
 	ProductId int `json:"product_id"`
 	InvoiceId int `json:"invoice_id"`
+}
+
+// ProductSalesJSON is a struct that represents the sales of a product in JSON format
+type ProductSalesJSON struct {
+	ProductDescription string `json:"product_description"`
+	Sales              int    `json:"sales"`
 }
 
 // GetAll returns all sales
@@ -46,8 +52,8 @@ func (h *SalesDefault) GetAll() http.HandlerFunc {
 		for ix, v := range s {
 			sJSON[ix] = SaleJSON{
 				Id:        v.Id,
-				Quantity: v.Quantity,
-				ProductId:  v.ProductId,
+				Quantity:  v.Quantity,
+				ProductId: v.ProductId,
 				InvoiceId: v.InvoiceId,
 			}
 		}
@@ -60,10 +66,11 @@ func (h *SalesDefault) GetAll() http.HandlerFunc {
 
 // RequestBodySale is a struct that represents the request body for a sale
 type RequestBodySale struct {
-	Quantity int `json:"quantity"`
+	Quantity  int `json:"quantity"`
 	ProductId int `json:"product_id"`
 	InvoiceId int `json:"invoice_id"`
 }
+
 // Create creates a new sale
 func (h *SalesDefault) Create() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -80,7 +87,7 @@ func (h *SalesDefault) Create() http.HandlerFunc {
 		// - deserialize
 		s := internal.Sale{
 			SaleAttributes: internal.SaleAttributes{
-				Quantity: reqBody.Quantity,
+				Quantity:  reqBody.Quantity,
 				ProductId: reqBody.ProductId,
 				InvoiceId: reqBody.InvoiceId,
 			},
@@ -96,13 +103,42 @@ func (h *SalesDefault) Create() http.HandlerFunc {
 		// - serialize
 		sa := SaleJSON{
 			Id:        s.Id,
-			Quantity: s.Quantity,
-			ProductId:  s.ProductId,
+			Quantity:  s.Quantity,
+			ProductId: s.ProductId,
 			InvoiceId: s.InvoiceId,
 		}
 		response.JSON(w, http.StatusOK, map[string]any{
 			"message": "sale created",
 			"data":    sa,
+		})
+	}
+}
+
+// GetTopProductSales returns the top n product sales
+func (h *SalesDefault) GetTopProductSales(n int) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// request
+		// ...
+
+		// process
+		p, err := h.sv.FindTopSold(n)
+		if err != nil {
+			response.Error(w, http.StatusInternalServerError, "error getting top product sales")
+			return
+		}
+
+		// response
+		// - serialize
+		pJSON := make([]ProductSalesJSON, len(p))
+		for ix, v := range p {
+			pJSON[ix] = ProductSalesJSON{
+				ProductDescription: v.ProductDescription,
+				Sales:              v.Sales,
+			}
+		}
+		response.JSON(w, http.StatusOK, map[string]any{
+			"message": "top product sales found",
+			"data":    pJSON,
 		})
 	}
 }

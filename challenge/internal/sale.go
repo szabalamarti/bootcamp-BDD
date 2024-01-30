@@ -17,3 +17,11 @@ type Sale struct {
 	// SaleAttributes is the attributes of the sale.
 	SaleAttributes
 }
+
+// ProductSales is the struct that represents the sales of a product.
+type ProductSales struct {
+	// ProductDescription is the description of the product.
+	ProductDescription string
+	// Sales is the sales of the product.
+	Sales int
+}

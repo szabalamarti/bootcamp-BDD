@@ -24,3 +24,9 @@ func (sv *SalesDefault) Save(s *internal.Sale) (err error) {
 	err = sv.rp.Save(s)
 	return
 }
+
+// FindTopSold returns the top n products sold in the database.
+func (sv *SalesDefault) FindTopSold(n int) (p []internal.ProductSales, err error) {
+	p, err = sv.rp.FindTopSold(n)
+	return
+}

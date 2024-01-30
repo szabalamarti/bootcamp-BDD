@@ -117,6 +117,8 @@ func (a *ApplicationDefault) SetUp() (err error) {
 		r.Get("/", hdSale.GetAll())
 		// - POST /sales
 		r.Post("/", hdSale.Create())
+		// - GET /sales/top
+		r.Get("/top", hdSale.GetTopProductSales(5))
 	})
 
 	return
