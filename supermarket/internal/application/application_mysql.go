@@ -1,11 +1,11 @@
 package application
 
 import (
-	"app/internal/handler"
-	"app/internal/repository"
 	"database/sql"
 	"fmt"
 	"net/http"
+	"supermarket/internal/handler"
+	"supermarket/internal/repository"
 
 	"github.com/go-sql-driver/mysql"
 

@@ -1,9 +1,9 @@
 package repository_test
 
 import (
-	"app/internal"
-	"app/internal/repository"
 	"database/sql"
+	"supermarket/internal"
+	"supermarket/internal/repository"
 	"testing"
 
 	"github.com/DATA-DOG/go-txdb"

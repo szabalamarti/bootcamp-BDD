@@ -1,8 +1,8 @@
 package main
 
 import (
-	"app/internal/application"
 	"fmt"
+	"supermarket/internal/application"
 
 	"github.com/go-sql-driver/mysql"
 )

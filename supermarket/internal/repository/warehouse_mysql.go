@@ -1,10 +1,10 @@
 package repository
 
 import (
-	"app/internal"
 	"database/sql"
 	"fmt"
 	"strings"
+	"supermarket/internal"
 )
 
 // RepositoryWarehouseMySQL is the repository warehouse MySQL.

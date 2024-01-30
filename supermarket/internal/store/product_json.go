@@ -1,9 +1,9 @@
 package store
 
 import (
-	"app/internal"
 	"encoding/json"
 	"os"
+	"supermarket/internal"
 	"time"
 )
 
@@ -58,7 +58,7 @@ func (s *StoreProductJSON) ReadAll() (p map[int]internal.Product, err error) {
 		}
 
 		p[v.Id] = internal.Product{
-			Id:          v.Id,
+			Id: v.Id,
 			ProductAttributes: internal.ProductAttributes{
 				Name:        v.Name,
 				Quantity:    v.Quantity,

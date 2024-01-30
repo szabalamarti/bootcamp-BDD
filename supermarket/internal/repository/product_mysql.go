@@ -1,9 +1,9 @@
 package repository
 
 import (
-	"app/internal"
 	"database/sql"
 	"errors"
+	"supermarket/internal"
 
 	"github.com/go-sql-driver/mysql"
 )

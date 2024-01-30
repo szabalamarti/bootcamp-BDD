@@ -1,6 +1,6 @@
 package repository
 
-import "app/internal"
+import "supermarket/internal"
 
 // NewRepositoryProductStore creates a new repository for products.
 func NewRepositoryProductStore(st internal.StoreProduct) (r *RepositoryProductStore) {

@@ -1,4 +1,4 @@
-module app
+module supermarket
 
 go 1.21
 

@@ -1,12 +1,12 @@
 package handler
 
 import (
-	"app/internal"
-	"app/platform/web/request"
-	"app/platform/web/response"
 	"encoding/json"
 	"net/http"
 	"strconv"
+	"supermarket/internal"
+	"supermarket/platform/web/request"
+	"supermarket/platform/web/response"
 
 	"github.com/go-chi/chi/v5"
 )

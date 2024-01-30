@@ -1,10 +1,10 @@
 package application
 
 import (
-	"app/internal/handler"
-	"app/internal/repository"
-	"app/internal/store"
 	"net/http"
+	"supermarket/internal/handler"
+	"supermarket/internal/repository"
+	"supermarket/internal/store"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -20,13 +20,13 @@ func NewApplicationDefault(addr, filePathStore string) (a *ApplicationDefault) {
 	}
 
 	a = &ApplicationDefault{
-		rt: defaultRouter,
-		addr: defaultAddr,
+		rt:            defaultRouter,
+		addr:          defaultAddr,
 		filePathStore: filePathStore,
 	}
 	return
 }
-		
+
 // ApplicationDefault is the default application.
 type ApplicationDefault struct {
 	// rt is the router.
