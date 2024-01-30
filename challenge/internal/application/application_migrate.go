@@ -69,9 +69,39 @@ func (a *ApplicationMigrate) Run() (err error) {
 	// customer
 	customerRepository := repository.NewCustomersMySQL(a.db)
 	customerLoader := loader.NewCustomerLoaderJSON(customerRepository, "docs/db/json/customers.json")
+
+	// product
+	productRepository := repository.NewProductsMySQL(a.db)
+	productLoader := loader.NewProductLoaderJSON(productRepository, "docs/db/json/products.json")
+
+	// invoice
+	invoiceRepository := repository.NewInvoicesMySQL(a.db)
+	invoiceLoader := loader.NewInvoiceLoaderJSON(invoiceRepository, "docs/db/json/invoices.json")
+
+	// sale
+	saleRepository := repository.NewSalesMySQL(a.db)
+	saleLoader := loader.NewSaleLoaderJSON(saleRepository, "docs/db/json/sales.json")
+
+	// migrate
 	err = customerLoader.Migrate()
 	if err != nil {
 		return
 	}
+
+	err = productLoader.Migrate()
+	if err != nil {
+		return
+	}
+
+	err = invoiceLoader.Migrate()
+	if err != nil {
+		return
+	}
+
+	err = saleLoader.Migrate()
+	if err != nil {
+		return
+	}
+
 	return
 }

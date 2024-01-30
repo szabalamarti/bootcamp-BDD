@@ -12,20 +12,8 @@ func main() {
 	// ...
 
 	// app
-	// - config
-	// cfg := &application.ConfigApplicationDefault{
-	// 	Db: &mysql.Config{
-	// 		User:   "root",
-	// 		Passwd: "",
-	// 		Net:    "tcp",
-	// 		Addr:   "localhost:3306",
-	// 		DBName: "fantasy_products",
-	// 	},
-	// 	Addr: "127.0.0.1:8080",
-	// }
-	// app := application.NewApplicationDefault(cfg)
-
-	cfg := &application.ConfigApplicationMigrate{
+	// - Default Config
+	cfg := &application.ConfigApplicationDefault{
 		Db: &mysql.Config{
 			User:   "root",
 			Passwd: "",
@@ -35,7 +23,20 @@ func main() {
 		},
 		Addr: "127.0.0.1:8080",
 	}
-	app := application.NewApplicationMigrate(cfg)
+	app := application.NewApplicationDefault(cfg)
+
+	// - Migrate Config
+	// cfg := &application.ConfigApplicationMigrate{
+	// 	Db: &mysql.Config{
+	// 		User:   "root",
+	// 		Passwd: "",
+	// 		Net:    "tcp",
+	// 		Addr:   "localhost:3306",
+	// 		DBName: "fantasy_products",
+	// 	},
+	// 	Addr: "127.0.0.1:8080",
+	// }
+	// app := application.NewApplicationMigrate(cfg)
 
 	// - set up
 	err := app.SetUp()
