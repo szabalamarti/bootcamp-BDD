@@ -1,9 +1,9 @@
 -- Delete user if already exists
-DROP USER IF EXISTS 'root'@'localhost';
+DROP USER IF EXISTS 'user1'@'localhost';
 
 -- Create user with all privileges
-CREATE USER 'root'@'localhost' IDENTIFIED BY 'test_password';
-GRANT ALL PRIVILEGES ON *.* TO 'root'@'localhost';
+CREATE USER 'user1'@'localhost' IDENTIFIED BY 'secret_password';
+GRANT ALL PRIVILEGES ON *.* TO 'user1'@'localhost';
 -- 
 CREATE DATABASE  IF NOT EXISTS `supermarket_test` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
 USE `supermarket_test`;

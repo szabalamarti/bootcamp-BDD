@@ -14,7 +14,7 @@ import (
 func init() {
 	cfg := mysql.Config{
 		User:      "root",
-		Passwd:    "test_password",
+		Passwd:    "",
 		Net:       "tcp",
 		Addr:      "localhost:3306",
 		DBName:    "supermarket_test",
@@ -31,6 +31,14 @@ func TestRepositoryWarehouseSave(t *testing.T) {
 		require.NoError(t, err)
 		defer db.Close()
 
+		// reset database on close
+		defer func() error {
+			_, err = db.Exec("DELETE FROM warehouses")
+			_, err = db.Exec("ALTER TABLE warehouses AUTO_INCREMENT = 1")
+			require.NoError(t, err)
+			return err
+		}()
+
 		// repository
 		rw := repository.NewRepositoryWarehouseMySQL(db)
 
@@ -44,10 +52,6 @@ func TestRepositoryWarehouseSave(t *testing.T) {
 
 		// ACT
 		err = rw.Save(&warehouse)
-
-		// reset auto increment
-		_, incrErr := db.Exec("ALTER TABLE warehouses AUTO_INCREMENT = 1")
-		require.NoError(t, incrErr)
 
 		// ASSERT
 		require.NoError(t, err)
@@ -63,6 +67,14 @@ func TestRepositoryWarehouseFindById(t *testing.T) {
 		db, err := sql.Open("txdb", "supermarket_test")
 		require.NoError(t, err)
 		defer db.Close()
+
+		// reset database on close
+		defer func() error {
+			_, err = db.Exec("DELETE FROM warehouses")
+			_, err = db.Exec("ALTER TABLE warehouses AUTO_INCREMENT = 1")
+			require.NoError(t, err)
+			return err
+		}()
 
 		// setup db
 		err = func() error {
