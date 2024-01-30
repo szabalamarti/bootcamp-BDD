@@ -34,6 +34,13 @@ type TotalByConditionJSON struct {
 	Total     float64 `json:"total"`
 }
 
+// CustomerAmountJSON is a struct that represents the customer amount in JSON format
+type CustomerAmountJSON struct {
+	FirstName string  `json:"first_name"`
+	LastName  string  `json:"last_name"`
+	Amount    float64 `json:"amount"`
+}
+
 // GetAll returns all customers
 func (h *CustomersDefault) GetAll() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -123,7 +130,7 @@ func (h *CustomersDefault) GetTotalByCondition() http.HandlerFunc {
 		// ...
 
 		// process
-		t, err := h.sv.GetTotalByCondition()
+		t, err := h.sv.FindTotalByCondition()
 		if err != nil {
 			log.Println(err)
 			response.Error(w, http.StatusInternalServerError, "error getting total by condition")
@@ -142,6 +149,37 @@ func (h *CustomersDefault) GetTotalByCondition() http.HandlerFunc {
 		response.JSON(w, http.StatusOK, map[string]any{
 			"message": "succesfuly retrieved total by condition",
 			"data":    tJSON,
+		})
+	}
+}
+
+// GetTopActive returns the top n active customers by total amount spent.
+func (h *CustomersDefault) GetTopActive(n int) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// request
+		// ...
+
+		// process
+		c, err := h.sv.FindTopActive(n)
+		if err != nil {
+			log.Println(err)
+			response.Error(w, http.StatusInternalServerError, "error getting top active")
+			return
+		}
+
+		// response
+		// - serialize
+		cJSON := make([]CustomerAmountJSON, len(c))
+		for ix, v := range c {
+			cJSON[ix] = CustomerAmountJSON{
+				FirstName: v.FirstName,
+				LastName:  v.LastName,
+				Amount:    v.Amount,
+			}
+		}
+		response.JSON(w, http.StatusOK, map[string]any{
+			"message": "succesfuly retrieved top active",
+			"data":    cJSON,
 		})
 	}
 }

@@ -69,9 +69,9 @@ func (r *CustomersMySQL) Save(c *internal.Customer) (err error) {
 	return
 }
 
-// GetTotalByCondition returns the aggregated money from invoices by customer condition.
+// FindTotalByCondition returns the aggregated money from invoices by customer condition.
 // values rounded to the second decimal place.
-func (r *CustomersMySQL) GetTotalByCondition() (t []internal.TotalByCondition, err error) {
+func (r *CustomersMySQL) FindTotalByCondition() (t []internal.TotalByCondition, err error) {
 	// execute the query
 	rows, err := r.db.Query("SELECT `condition`, SUM(`total`) FROM customers INNER JOIN invoices ON customers.id = invoices.customer_id GROUP BY `condition`")
 	if err != nil {
@@ -91,6 +91,55 @@ func (r *CustomersMySQL) GetTotalByCondition() (t []internal.TotalByCondition, e
 		tb.Total = math.Round(tb.Total*100) / 100
 		// append the total by condition to the slice
 		t = append(t, tb)
+	}
+
+	err = rows.Err()
+	if err != nil {
+		return
+	}
+
+	return
+}
+
+// FindTopActive returns the top n active customers in the database by total spent
+// total is rounded to the second decimal place.
+func (r *CustomersMySQL) FindTopActive(n int) (c []internal.CustomerAmount, err error) {
+	// execute the query
+	rows, err := r.db.Query(`
+        SELECT 
+            customers.first_name, 
+            customers.last_name, 
+            SUM(invoices.total) AS total 
+        FROM 
+            customers 
+        INNER JOIN 
+            invoices ON customers.id = invoices.customer_id 
+        GROUP BY 
+            customers.id 
+        ORDER BY 
+            total DESC 
+        LIMIT ?`,
+		n,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	// iterate over the rows
+	for rows.Next() {
+		var ca internal.CustomerAmount
+		// scan the row into the customer amount
+		err := rows.Scan(&ca.FirstName, &ca.LastName, &ca.Amount)
+		if err != nil {
+			return nil, err
+		}
+		//
+		ca.Amount = math.Round(ca.Amount*100) / 100
+		// append the customer amount to the slice
+		c = append(c, ca)
 	}
 
 	err = rows.Err()

@@ -25,8 +25,14 @@ func (s *CustomersDefault) Save(c *internal.Customer) (err error) {
 	return
 }
 
-// GetTotalByCondition returns the aggregated money from invoices by customer condition.
-func (s *CustomersDefault) GetTotalByCondition() (t []internal.TotalByCondition, err error) {
-	t, err = s.rp.GetTotalByCondition()
+// FindTotalByCondition returns the aggregated money from invoices by customer condition.
+func (s *CustomersDefault) FindTotalByCondition() (t []internal.TotalByCondition, err error) {
+	t, err = s.rp.FindTotalByCondition()
+	return
+}
+
+// FindTopActive returns the top n active customers in the database by total spent.
+func (s *CustomersDefault) FindTopActive(n int) (c []internal.CustomerAmount, err error) {
+	c, err = s.rp.FindTopActive(n)
 	return
 }

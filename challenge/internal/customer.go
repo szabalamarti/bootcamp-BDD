@@ -25,3 +25,13 @@ type TotalByCondition struct {
 	// Total is the aggregated money from invoices by customer condition.
 	Total float64
 }
+
+// CustomerAmount is the struct that represents the amount spent by customer.
+type CustomerAmount struct {
+	// FirstName is the first name of the customer.
+	FirstName string
+	// LastName is the last name of the customer.
+	LastName string
+	// Amount is the amount spent by customer.
+	Amount float64
+}
