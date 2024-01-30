@@ -2,6 +2,7 @@ package repository
 
 import (
 	"database/sql"
+	"math"
 
 	"app/internal"
 )
@@ -64,7 +65,38 @@ func (r *CustomersMySQL) Save(c *internal.Customer) (err error) {
 
 	// set the id
 	(*c).Id = int(id)
-	
+
 	return
 }
 
+// GetTotalByCondition returns the aggregated money from invoices by customer condition.
+// values rounded to the second decimal place.
+func (r *CustomersMySQL) GetTotalByCondition() (t []internal.TotalByCondition, err error) {
+	// execute the query
+	rows, err := r.db.Query("SELECT `condition`, SUM(`total`) FROM customers INNER JOIN invoices ON customers.id = invoices.customer_id GROUP BY `condition`")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	// iterate over the rows
+	for rows.Next() {
+		var tb internal.TotalByCondition
+		// scan the row into the total by condition
+		err := rows.Scan(&tb.Condition, &tb.Total)
+		if err != nil {
+			return nil, err
+		}
+		// round the total to the second decimal place
+		tb.Total = math.Round(tb.Total*100) / 100
+		// append the total by condition to the slice
+		t = append(t, tb)
+	}
+
+	err = rows.Err()
+	if err != nil {
+		return
+	}
+
+	return
+}

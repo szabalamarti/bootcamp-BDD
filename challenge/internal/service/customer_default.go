@@ -24,3 +24,9 @@ func (s *CustomersDefault) Save(c *internal.Customer) (err error) {
 	err = s.rp.Save(c)
 	return
 }
+
+// GetTotalByCondition returns the aggregated money from invoices by customer condition.
+func (s *CustomersDefault) GetTotalByCondition() (t []internal.TotalByCondition, err error) {
+	t, err = s.rp.GetTotalByCondition()
+	return
+}

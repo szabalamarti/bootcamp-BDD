@@ -17,3 +17,11 @@ type Customer struct {
 	// CustomerAttributes is the attributes of the customer.
 	CustomerAttributes
 }
+
+// TotalByCondition is the struct that represents the total of invoices by customer condition.
+type TotalByCondition struct {
+	// Condition is the condition of the customer.
+	Condition int
+	// Total is the aggregated money from invoices by customer condition.
+	Total float64
+}

@@ -27,6 +27,13 @@ type CustomerJSON struct {
 	LastName  string `json:"last_name"`
 	Condition int    `json:"condition"`
 }
+
+// TotalByConditionJSON is a struct that represents the total by condition in JSON format
+type TotalByConditionJSON struct {
+	Condition int     `json:"condition"`
+	Total     float64 `json:"total"`
+}
+
 // GetAll returns all customers
 func (h *CustomersDefault) GetAll() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -65,6 +72,7 @@ type RequestBodyCustomer struct {
 	LastName  string `json:"last_name"`
 	Condition int    `json:"condition"`
 }
+
 // Create creates a new customer
 func (h *CustomersDefault) Create() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -104,6 +112,36 @@ func (h *CustomersDefault) Create() http.HandlerFunc {
 		response.JSON(w, http.StatusCreated, map[string]any{
 			"message": "customer created",
 			"data":    cs,
+		})
+	}
+}
+
+// GetTotalByCondition returns the aggregated money from invoices by customer condition
+func (h *CustomersDefault) GetTotalByCondition() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// request
+		// ...
+
+		// process
+		t, err := h.sv.GetTotalByCondition()
+		if err != nil {
+			log.Println(err)
+			response.Error(w, http.StatusInternalServerError, "error getting total by condition")
+			return
+		}
+
+		// response
+		// - serialize
+		tJSON := make([]TotalByConditionJSON, len(t))
+		for ix, v := range t {
+			tJSON[ix] = TotalByConditionJSON{
+				Condition: v.Condition,
+				Total:     v.Total,
+			}
+		}
+		response.JSON(w, http.StatusOK, map[string]any{
+			"message": "succesfuly retrieved total by condition",
+			"data":    tJSON,
 		})
 	}
 }
