@@ -21,13 +21,13 @@ func init() {
 		ParseTime: true,
 	}
 
-	txdb.Register("txdb", "mysql", cfg.FormatDSN())
+	txdb.Register("txdb_customer_repository", "mysql", cfg.FormatDSN())
 }
 
 func TestFindTotalByCondition(t *testing.T) {
 	t.Run("should return the total of customers by condition", func(t *testing.T) {
 		// ARRANGE
-		db, err := sql.Open("txdb", "fantasy_products_test")
+		db, err := sql.Open("txdb_customer_repository", "fantasy_products_test")
 		require.NoError(t, err)
 		defer db.Close()
 
@@ -83,7 +83,7 @@ func TestFindTotalByCondition(t *testing.T) {
 func TestFindTopActiveCustomers(t *testing.T) {
 	t.Run("should return the top active customers", func(t *testing.T) {
 		// ARRANGE
-		db, err := sql.Open("txdb", "fantasy_products_test")
+		db, err := sql.Open("txdb_customer_repository", "fantasy_products_test")
 		require.NoError(t, err)
 		defer db.Close()
 
@@ -139,7 +139,7 @@ func TestFindTopActiveCustomers(t *testing.T) {
 	})
 	t.Run("should return all entries if limit is greater than the number of customers", func(t *testing.T) {
 		// ARRANGE
-		db, err := sql.Open("txdb", "fantasy_products_test")
+		db, err := sql.Open("txdb_customer_repository", "fantasy_products_test")
 		require.NoError(t, err)
 		defer db.Close()
 
